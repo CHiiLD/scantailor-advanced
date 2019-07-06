@@ -140,11 +140,11 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
           QPointF diffCenter = auto_rect_center - content_rect_center;
           QPointF value = new_params.getAxisCorrectoinValue();
 
-          if (0 < value.x() && fabs(diffCenter.x() <= value.x()))
+          if (0 < value.x() && fabs(diffCenter.x()) <= value.x())
           {
             content_rect.moveCenter(QPointF(auto_rect_center.x(), content_rect_center.y()));
           }
-          if (0 < value.y() && fabs(diffCenter.y() <= value.y()))
+          if (0 < value.y() && fabs(diffCenter.y()) <= value.y())
           {
             content_rect.moveCenter(QPointF(content_rect_center.x(), auto_rect_center.y()));
           }
