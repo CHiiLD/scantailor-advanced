@@ -29,9 +29,12 @@ Dependencies::Dependencies(const QPolygonF& rotated_page_outline) : m_rotatedPag
 Dependencies::Dependencies(const QPolygonF& rotated_page_outline,
                            const AutoManualMode content_detection_mode,
                            const AutoManualMode page_detection_mode,
-                           const bool fine_tune_corners)
+                           bool fine_tune_corners,
+                           bool enable_axis_correction,
+                           const QPointF& axis_correction_value)
     : m_rotatedPageOutline(rotated_page_outline),
-      m_params(content_detection_mode, page_detection_mode, fine_tune_corners) {}
+      m_params(content_detection_mode, page_detection_mode, fine_tune_corners,
+              enable_axis_correction, axis_correction_value) {}
 
 Dependencies::Dependencies(const QDomElement& deps_el)
     : m_rotatedPageOutline(XmlUnmarshaller::polygonF(deps_el.namedItem("rotated-page-outline").toElement())),
@@ -98,21 +101,30 @@ Dependencies::Params::Params()
 
 Dependencies::Params::Params(const AutoManualMode content_detection_mode,
                              const AutoManualMode page_detection_mode,
-                             const bool fine_tune_corners)
+                             const bool fine_tune_corners,
+                             const bool enable_axis_correction,
+                             const QPointF axis_correction_value)
     : m_contentDetectionMode(content_detection_mode),
       m_pageDetectionMode(page_detection_mode),
-      m_fineTuneCorners(fine_tune_corners) {}
+      m_fineTuneCorners(fine_tune_corners),
+      m_enableAxisCorrecion(enable_axis_correction),
+      m_axisCorrectoinValue(axis_correction_value) {}
 
 Dependencies::Params::Params(const QDomElement& el)
     : m_contentDetectionMode(stringToAutoManualMode(el.attribute("contentDetectionMode"))),
       m_pageDetectionMode(stringToAutoManualMode(el.attribute("pageDetectionMode"))),
-      m_fineTuneCorners(el.attribute("fineTuneCorners") == "1") {}
+      m_fineTuneCorners(el.attribute("fineTuneCorners") == "1"),
+      m_enableAxisCorrecion(el.attribute("enableAxisCorrection") == "1"),
+      m_axisCorrectoinValue(QPointF(el.attribute("xAxisCorrectionValue").toDouble(), el.attribute("yAxisCorrectionValue").toDouble())) {}
 
 QDomElement Dependencies::Params::toXml(QDomDocument& doc, const QString& name) const {
   QDomElement el(doc.createElement(name));
   el.setAttribute("contentDetectionMode", autoManualModeToString(m_contentDetectionMode));
   el.setAttribute("pageDetectionMode", autoManualModeToString(m_pageDetectionMode));
   el.setAttribute("fineTuneCorners", m_fineTuneCorners ? "1" : "0");
+  el.setAttribute("fineTuneCorners", m_enableAxisCorrecion ? "1" : "0");
+  el.setAttribute("xAxisCorrectionValue", m_axisCorrectoinValue.x());
+  el.setAttribute("xAxisCorrectionValue", m_axisCorrectoinValue.y());
 
   return el;
 }
@@ -132,7 +144,15 @@ bool Dependencies::Params::compatibleWith(const Dependencies::Params& other) con
 }
 
 bool Dependencies::Params::needUpdateContentBox(const Dependencies::Params& other) const {
-  return (m_contentDetectionMode != MODE_MANUAL) && (m_contentDetectionMode != other.m_contentDetectionMode);
+  if ((m_contentDetectionMode != MODE_MANUAL) && (m_contentDetectionMode != other.m_contentDetectionMode)) {
+    return true;
+  }
+
+  if ((m_contentDetectionMode == MODE_MANUAL) && (m_enableAxisCorrecion != other.m_enableAxisCorrecion)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool Dependencies::Params::needUpdatePageBox(const Dependencies::Params& other) const {

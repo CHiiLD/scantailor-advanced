@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>196</width>
-    <height>339</height>
+    <width>267</width>
+    <height>533</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -202,6 +202,19 @@
       <set>Qt::AlignCenter</set>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1" colspan="2">
+       <widget class="QPushButton" name="contentDetectDisableBtn">
+        <property name="text">
+         <string>Disable</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
        <widget class="QPushButton" name="contentDetectAutoBtn">
         <property name="text">
@@ -211,19 +224,6 @@
          <bool>true</bool>
         </property>
         <property name="checked">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
-       <widget class="QPushButton" name="contentDetectDisableBtn">
-        <property name="text">
-         <string>Disable</string>
-        </property>
-        <property name="checkable">
          <bool>true</bool>
         </property>
         <property name="autoExclusive">
@@ -242,6 +242,89 @@
         <property name="autoExclusive">
          <bool>true</bool>
         </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QGroupBox" name="contentBoxOptionGroup">
+        <property name="title">
+         <string>Options</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QCheckBox" name="correctAxisBtn">
+           <property name="toolTip">
+            <string>Shift with corners while they are in black. </string>
+           </property>
+           <property name="text">
+            <string>Correct central axis</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="centralAxisCorrectionWidget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>105</width>
+             <height>52</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>1000000</width>
+             <height>1000000</height>
+            </size>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Y axis</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="yAxisCorrectionValue">
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>99999.990000000005239</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>X axis</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="xAxisCorrectionValue">
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>99999.990000000005239</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -307,8 +390,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../../resources/resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -30,14 +30,18 @@ Params::Params(const QRectF& content_rect,
                const Dependencies& deps,
                const AutoManualMode content_detection_mode,
                const AutoManualMode page_detection_mode,
-               const bool fine_tune_corners)
+               const bool fine_tune_corners,
+               const bool enable_axis_correction,
+               const QPointF& axis_correction_value)
     : m_contentRect(content_rect),
       m_pageRect(page_rect),
       m_contentSizeMM(content_size_mm),
       m_deps(deps),
       m_contentDetectionMode(content_detection_mode),
       m_pageDetectionMode(page_detection_mode),
-      m_fineTuneCorners(fine_tune_corners) {}
+      m_fineTuneCorners(fine_tune_corners),
+      m_enableAxisCorrection(enable_axis_correction),
+      m_axisCorrectionValue(axis_correction_value) {}
 
 Params::Params(const QDomElement& filter_el)
     : m_contentRect(XmlUnmarshaller::rectF(filter_el.namedItem("content-rect").toElement())),
@@ -46,7 +50,9 @@ Params::Params(const QDomElement& filter_el)
       m_deps(filter_el.namedItem("dependencies").toElement()),
       m_contentDetectionMode(stringToAutoManualMode(filter_el.attribute("contentDetectionMode"))),
       m_pageDetectionMode(stringToAutoManualMode(filter_el.attribute("pageDetectionMode"))),
-      m_fineTuneCorners(filter_el.attribute("fineTuneCorners") == "1") {}
+      m_fineTuneCorners(filter_el.attribute("fineTuneCorners") == "1"),
+      m_enableAxisCorrection(filter_el.attribute("enableAxisCorrection") == "1"),
+      m_axisCorrectionValue(QPointF(filter_el.attribute("xAxisCorrectionValue").toDouble(), filter_el.attribute("yAxisCorrectionValue").toDouble())) {}
 
 Params::~Params() = default;
 
@@ -56,7 +62,10 @@ QDomElement Params::toXml(QDomDocument& doc, const QString& name) const {
   QDomElement el(doc.createElement(name));
   el.setAttribute("contentDetectionMode", autoManualModeToString(m_contentDetectionMode));
   el.setAttribute("pageDetectionMode", autoManualModeToString(m_pageDetectionMode));
-  el.setAttribute("fineTuneCorners", m_fineTuneCorners ? "1" : "0");
+  el.setAttribute("fineTuneCorners", m_fineTuneCorners ? "1" : "0"),
+  el.setAttribute("enableAxisCorrection", m_enableAxisCorrection ? "1" : "0"),
+  el.setAttribute("xAxisCorrectionValue", m_axisCorrectionValue.x()),
+  el.setAttribute("yAxisCorrectionValue", m_axisCorrectionValue.y());
   el.appendChild(marshaller.rectF(m_contentRect, "content-rect"));
   el.appendChild(marshaller.rectF(m_pageRect, "page-rect"));
   el.appendChild(marshaller.sizeF(m_contentSizeMM, "content-size-mm"));
@@ -120,4 +129,12 @@ void Params::setDependencies(const Dependencies& deps) {
 void Params::setFineTuneCornersEnabled(bool fine_tune_corners) {
   m_fineTuneCorners = fine_tune_corners;
 }
+
+  QPointF Params::getAxisCorrectoinValue() {
+    return m_axisCorrectionValue;
+  }
+
+  bool Params::isEnableAxisCorrection() {
+    return m_enableAxisCorrection;
+  }
 }  // namespace select_content

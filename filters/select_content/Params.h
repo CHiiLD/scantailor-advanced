@@ -43,7 +43,9 @@ class Params {
          const Dependencies& deps,
          AutoManualMode content_detection_mode,
          AutoManualMode page_detection_mode,
-         bool fine_tune_corners);
+         const bool fine_tune_corners,
+         const bool enable_axis_correction,
+         const QPointF& axis_correction_value);
 
   explicit Params(const QDomElement& filter_el);
 
@@ -79,6 +81,10 @@ class Params {
 
   void setFineTuneCornersEnabled(bool fine_tune_corners);
 
+  bool isEnableAxisCorrection();
+
+  QPointF getAxisCorrectoinValue();
+
  private:
   QRectF m_contentRect;
   QRectF m_pageRect;
@@ -87,6 +93,8 @@ class Params {
   AutoManualMode m_contentDetectionMode;
   AutoManualMode m_pageDetectionMode;
   bool m_fineTuneCorners;
+  bool m_enableAxisCorrection;
+  QPointF m_axisCorrectionValue;
 };
 }  // namespace select_content
 #endif  // ifndef SELECT_CONTENT_PARAMS_H_

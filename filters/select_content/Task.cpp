@@ -87,7 +87,8 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
 
   std::unique_ptr<Params> params(m_settings->getPageParams(m_pageId));
   const Dependencies deps = (params) ? Dependencies(data.xform().resultingPreCropArea(), params->contentDetectionMode(),
-                                                    params->pageDetectionMode(), params->isFineTuningEnabled())
+                                                    params->pageDetectionMode(), params->isFineTuningEnabled(),
+                                                    params->isEnableAxisCorrection(), params->getAxisCorrectoinValue())
                                      : Dependencies(data.xform().resultingPreCropArea());
 
   Params new_params(deps);
@@ -131,6 +132,23 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
         content_rect = ContentBoxFinder::findContentBox(status, data, page_rect, m_dbg.get());
       } else if (new_params.contentDetectionMode() == MODE_DISABLED) {
         content_rect = page_rect;
+      } else if (new_params.contentDetectionMode() == MODE_MANUAL) {
+        if (new_params.isEnableAxisCorrection()) {
+          QRectF auto_rect = ContentBoxFinder::findContentBox(status, data, page_rect, m_dbg.get());
+          QPointF auto_rect_center = auto_rect.center();
+          QPointF content_rect_center = content_rect.center();
+          QPointF diffCenter = auto_rect_center - content_rect_center;
+          QPointF value = new_params.getAxisCorrectoinValue();
+
+          if (0 < value.x() && fabs(diffCenter.x() <= value.x()))
+          {
+            content_rect.moveCenter(QPointF(auto_rect_center.x(), content_rect_center.y()));
+          }
+          if (0 < value.y() && fabs(diffCenter.y() <= value.y()))
+          {
+            content_rect.moveCenter(QPointF(content_rect_center.x(), auto_rect_center.y()));
+          }
+        }
       }
 
       if (content_rect.isValid()) {

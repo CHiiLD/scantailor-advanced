@@ -607,7 +607,9 @@ std::unique_ptr<DefaultParams> DefaultParamsDialog::buildParams() const {
       = pageDetectDisableBtn->isChecked() ? MODE_DISABLED : pageDetectManualBtn->isChecked() ? MODE_MANUAL : MODE_AUTO;
   DefaultParams::SelectContentParams selectContentParams(QSizeF(widthSpinBox->value(), heightSpinBox->value()),
                                                          !contentDetectDisableBtn->isChecked(), pageBoxMode,
-                                                         fineTuneBtn->isChecked());
+                                                         fineTuneBtn->isChecked(),
+                                                         false,
+                                                         QPointF(0, 0));
 
   Alignment alignment;
   switch (alignmentMode->currentIndex()) {

@@ -66,6 +66,7 @@ void OptionsWidget::postUpdateUI(const UiData& ui_data) {
   pageBoxGroup->setEnabled(true);
 
   updatePageDetectOptionsDisplay();
+  updateContentDetectOptionDisplay();
   updatePageRectSize(m_uiData.pageRect().size());
 
   setupUiConnections();
@@ -75,6 +76,7 @@ void OptionsWidget::manualContentRectSet(const QRectF& content_rect) {
   m_uiData.setContentRect(content_rect);
   m_uiData.setContentDetectionMode(MODE_MANUAL);
   updateContentModeIndication(MODE_MANUAL);
+  updateContentDetectOptionDisplay();
 
   commitCurrentParams();
 
@@ -106,6 +108,7 @@ void OptionsWidget::updatePageRectSize(const QSizeF& size) {
 
 void OptionsWidget::contentDetectToggled(const AutoManualMode mode) {
   m_uiData.setContentDetectionMode(mode);
+  updateContentDetectOptionDisplay();
   commitCurrentParams();
 
   if (mode != MODE_MANUAL) {
@@ -171,6 +174,8 @@ void OptionsWidget::updatePageDetectOptionsDisplay() {
   dimensionsWidget->setVisible(m_uiData.pageDetectionMode() == MODE_MANUAL);
 }
 
+
+
 void OptionsWidget::dimensionsChangedLocally(double) {
   if (m_ignorePageSizeChanges) {
     return;
@@ -190,7 +195,8 @@ void OptionsWidget::commitCurrentParams() {
   updateDependenciesIfNecessary();
 
   Params params(m_uiData.contentRect(), m_uiData.contentSizeMM(), m_uiData.pageRect(), m_uiData.dependencies(),
-                m_uiData.contentDetectionMode(), m_uiData.pageDetectionMode(), m_uiData.isFineTuningCornersEnabled());
+                m_uiData.contentDetectionMode(), m_uiData.pageDetectionMode(), m_uiData.isFineTuningCornersEnabled(),
+                m_uiData.isEnableAxisCorrection(), m_uiData.axisCorrectionValue());
   m_settings->setPageParams(m_pageId, params);
 }
 
@@ -228,7 +234,8 @@ void OptionsWidget::applySelection(const std::set<PageId>& pages,
 
   const Params params(m_uiData.contentRect(), m_uiData.contentSizeMM(), m_uiData.pageRect(), Dependencies(),
                       m_uiData.contentDetectionMode(), m_uiData.pageDetectionMode(),
-                      m_uiData.isFineTuningCornersEnabled());
+                      m_uiData.isFineTuningCornersEnabled(),
+                      m_uiData.isEnableAxisCorrection(), m_uiData.axisCorrectionValue());
 
   for (const PageId& page_id : pages) {
     if (m_pageId == page_id) {
@@ -327,6 +334,10 @@ void OptionsWidget::setupUiConnections() {
           boost::bind(&OptionsWidget::pageDetectToggled, this, MODE_DISABLED));
   CONNECT(fineTuneBtn, SIGNAL(toggled(bool)), this, SLOT(fineTuningChanged(bool)));
   CONNECT(applyToBtn, SIGNAL(clicked()), this, SLOT(showApplyToDialog()));
+
+  CONNECT(correctAxisBtn, SIGNAL(toggled(bool)), this, SLOT(onCheckAxisCorrection(bool)));
+  CONNECT(xAxisCorrectionValue, SIGNAL(valueChanged(double)), this, SLOT(onChangeAxisCorrectionValue(double)));
+  CONNECT(yAxisCorrectionValue, SIGNAL(valueChanged(double)), this, SLOT(onChangeAxisCorrectionValue(double)));
 }
 
 #undef CONNECT
@@ -337,6 +348,29 @@ void OptionsWidget::removeUiConnections() {
   }
   m_connectionList.clear();
 }
+
+  void OptionsWidget::onCheckAxisCorrection(bool checked) {
+    m_uiData.setEnableCorrectAxis(checked);
+    commitCurrentParams();
+
+    if (m_uiData.contentDetectionMode() == MODE_MANUAL) {
+      emit reloadRequested();
+    }
+  }
+
+  void OptionsWidget::onChangeAxisCorrectionValue(double) {
+    double xAxis = xAxisCorrectionValue->value();
+    double yAxis = yAxisCorrectionValue->value();
+    QPointF axis = QPointF(xAxis, yAxis);
+    m_uiData.setAxisCorrectionValue(axis);
+    commitCurrentParams();
+  }
+
+  void OptionsWidget::updateContentDetectOptionDisplay() {
+    correctAxisBtn->setChecked(m_uiData.isEnableAxisCorrection());
+    correctAxisBtn->setVisible(m_uiData.contentDetectionMode() == MODE_MANUAL);
+    contentBoxOptionGroup->setVisible(m_uiData.contentDetectionMode() == MODE_MANUAL);
+  }
 
 
 /*========================= OptionsWidget::UiData ======================*/
@@ -400,4 +434,22 @@ void OptionsWidget::UiData::setFineTuneCornersEnabled(bool fine_tune) {
 bool OptionsWidget::UiData::isFineTuningCornersEnabled() const {
   return m_fineTuneCornersEnabled;
 }
+
+  void OptionsWidget::UiData::setEnableCorrectAxis(bool enabled) {
+    m_enableAxisCorrection = enabled;
+  }
+
+  void OptionsWidget::UiData::setAxisCorrectionValue(QPointF &axis) {
+    m_axisCorrectionValue = axis;
+  }
+
+  bool OptionsWidget::UiData::isEnableAxisCorrection() {
+    return m_enableAxisCorrection;
+  }
+
+  QPointF &OptionsWidget::UiData::axisCorrectionValue() {
+    return m_axisCorrectionValue;
+  }
+
+
 }  // namespace select_content

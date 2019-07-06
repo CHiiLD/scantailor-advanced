@@ -85,7 +85,9 @@ class DefaultParams {
     SelectContentParams(const QSizeF& pageRectSize,
                         bool contentDetectEnabled,
                         AutoManualMode pageDetectMode,
-                        bool fineTuneCorners);
+                        bool fineTuneCorners,
+                        bool enableAxisCorrection,
+                        QPointF axisCorrectionValue);
 
     explicit SelectContentParams(const QDomElement& el);
 
@@ -107,11 +109,17 @@ class DefaultParams {
 
     void setPageDetectMode(AutoManualMode pageDetectMode);
 
+    bool isEnableAxisCorrection() const;
+
+    QPointF getAxisCorrectionValue() const;
+
    private:
     QSizeF m_pageRectSize;
     bool m_contentDetectEnabled;
     AutoManualMode m_pageDetectMode;
     bool m_fineTuneCorners;
+    bool m_enableAxisCorrection;
+    QPointF m_axisCorrectionValue;
   };
 
   class PageLayoutParams {

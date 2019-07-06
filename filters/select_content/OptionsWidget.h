@@ -75,7 +75,15 @@ class OptionsWidget : public FilterOptionsWidget, public UnitsObserver, private 
 
     AutoManualMode pageDetectionMode() const;
 
-   private:
+    void setEnableCorrectAxis(bool enabled);
+
+    void setAxisCorrectionValue(QPointF &axis);
+
+    bool isEnableAxisCorrection();
+
+    QPointF &axisCorrectionValue();
+
+  private:
     QRectF m_contentRect;  // In virtual image coordinates.
     QRectF m_pageRect;
     PhysSizeCalc m_sizeCalc;
@@ -83,6 +91,8 @@ class OptionsWidget : public FilterOptionsWidget, public UnitsObserver, private 
     AutoManualMode m_contentDetectionMode;
     AutoManualMode m_pageDetectionMode;
     bool m_fineTuneCornersEnabled;
+    bool m_enableAxisCorrection;
+    QPointF m_axisCorrectionValue;
   };
 
 
@@ -124,12 +134,18 @@ class OptionsWidget : public FilterOptionsWidget, public UnitsObserver, private 
 
   void dimensionsChangedLocally(double);
 
+  void onCheckAxisCorrection(bool checked);
+
+  void onChangeAxisCorrectionValue(double);
+
  private:
   void updateContentModeIndication(AutoManualMode mode);
 
   void updatePageModeIndication(AutoManualMode mode);
 
   void updatePageDetectOptionsDisplay();
+
+  void updateContentDetectOptionDisplay();
 
   void commitCurrentParams();
 

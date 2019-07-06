@@ -180,11 +180,15 @@ QDomElement DefaultParams::PageSplitParams::toXml(QDomDocument& doc, const QStri
 DefaultParams::SelectContentParams::SelectContentParams(const QSizeF& pageRectSize,
                                                         bool contentDetectEnabled,
                                                         AutoManualMode pageDetectMode,
-                                                        bool fineTuneCorners)
+                                                        bool fineTuneCorners,
+                                                        bool enableAxisCorrection,
+                                                        QPointF axisCorrectionValue)
     : m_pageRectSize(pageRectSize),
       m_contentDetectEnabled(contentDetectEnabled),
       m_pageDetectMode(pageDetectMode),
-      m_fineTuneCorners(fineTuneCorners) {}
+      m_fineTuneCorners(fineTuneCorners),
+      m_enableAxisCorrection(enableAxisCorrection),
+      m_axisCorrectionValue(axisCorrectionValue){}
 
 DefaultParams::SelectContentParams::SelectContentParams()
     : m_pageRectSize(QSizeF(210, 297)),
@@ -220,14 +224,19 @@ DefaultParams::SelectContentParams::SelectContentParams(const QDomElement& el)
     : m_pageRectSize(XmlUnmarshaller::sizeF(el.namedItem("pageRectSize").toElement())),
       m_contentDetectEnabled(el.attribute("contentDetectEnabled") == "1"),
       m_pageDetectMode(stringToAutoManualMode(el.attribute("pageDetectMode"))),
-      m_fineTuneCorners(el.attribute("fineTuneCorners") == "1") {}
+      m_fineTuneCorners(el.attribute("fineTuneCorners") == "1"),
+      m_enableAxisCorrection(el.attribute("enableAxisCorrection") == "1"),
+      m_axisCorrectionValue(QPointF(el.attribute("xAxisCorrectionValue").toDouble(), el.attribute("yAxisCorrectionValue").toDouble())){}
 
 QDomElement DefaultParams::SelectContentParams::toXml(QDomDocument& doc, const QString& name) const {
   QDomElement el(doc.createElement(name));
   el.appendChild(XmlMarshaller(doc).sizeF(m_pageRectSize, "pageRectSize"));
   el.setAttribute("contentDetectEnabled", m_contentDetectEnabled ? "1" : "0");
   el.setAttribute("pageDetectMode", autoManualModeToString(m_pageDetectMode));
-  el.setAttribute("fineTuneCorners", m_fineTuneCorners ? "1" : "0");
+  el.setAttribute("fineTuneCorners", m_fineTuneCorners ? "1" : "0"),
+  el.setAttribute("m_enableAxisCorrection", m_enableAxisCorrection ? "1" : "0"),
+  el.setAttribute("xAxisCorrectionValue", m_axisCorrectionValue.x()),
+  el.setAttribute("yAxisCorrectionValue", m_axisCorrectionValue.y());
 
   return el;
 }
@@ -238,6 +247,14 @@ AutoManualMode DefaultParams::SelectContentParams::getPageDetectMode() const {
 
 void DefaultParams::SelectContentParams::setPageDetectMode(AutoManualMode pageDetectMode) {
   SelectContentParams::m_pageDetectMode = pageDetectMode;
+}
+
+QPointF DefaultParams::SelectContentParams::getAxisCorrectionValue() const {
+  return m_axisCorrectionValue;
+}
+
+bool DefaultParams::SelectContentParams::isEnableAxisCorrection() const {
+  return m_enableAxisCorrection;
 }
 
 DefaultParams::PageLayoutParams::PageLayoutParams(const Margins& hardMargins,

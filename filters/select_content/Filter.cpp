@@ -181,7 +181,8 @@ void Filter::loadDefaultSettings(const PageInfo& page_info) {
   m_settings->setPageParams(
       page_info.id(), Params(QRectF(), QSizeF(), QRectF(QPointF(0, 0), QSizeF(pageRectWidth, pageRectHeight)),
                              Dependencies(), selectContentParams.isContentDetectEnabled() ? MODE_AUTO : MODE_DISABLED,
-                             selectContentParams.getPageDetectMode(), selectContentParams.isFineTuneCorners()));
+                             selectContentParams.getPageDetectMode(), selectContentParams.isFineTuneCorners(),
+                             selectContentParams.isEnableAxisCorrection(), selectContentParams.getAxisCorrectionValue()));
 }
 
 OptionsWidget* Filter::optionsWidget() {

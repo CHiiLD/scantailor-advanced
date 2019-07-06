@@ -42,7 +42,9 @@ class Dependencies {
   explicit Dependencies(const QPolygonF& rotated_page_outline,
                         AutoManualMode content_detection_mode,
                         AutoManualMode page_detection_mode,
-                        bool fine_tune_corners);
+                        bool fine_tune_corners,
+                        bool enable_axis_correction,
+                        const QPointF& axis_correction_value);
 
   explicit Dependencies(const QDomElement& deps_el);
 
@@ -65,7 +67,8 @@ class Dependencies {
    public:
     Params();
 
-    Params(AutoManualMode content_detection_mode, AutoManualMode page_detection_mode, bool fine_tune_corners);
+    Params(AutoManualMode content_detection_mode, AutoManualMode page_detection_mode, bool fine_tune_corners,
+            bool enable_axis_correction, QPointF axis_correction_value);
 
     explicit Params(const QDomElement& el);
 
@@ -85,6 +88,8 @@ class Dependencies {
     AutoManualMode m_contentDetectionMode;
     AutoManualMode m_pageDetectionMode;
     bool m_fineTuneCorners;
+    bool m_enableAxisCorrecion;
+    QPointF m_axisCorrectoinValue;
   };
 
   QPolygonF m_rotatedPageOutline;
