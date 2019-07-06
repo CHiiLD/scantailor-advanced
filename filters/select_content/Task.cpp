@@ -168,6 +168,8 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
   ui_data.setContentDetectionMode(new_params.contentDetectionMode());
   ui_data.setPageDetectionMode(new_params.pageDetectionMode());
   ui_data.setFineTuneCornersEnabled(new_params.isFineTuningEnabled());
+  ui_data.setEnableCorrectAxis(new_params.isEnableAxisCorrection());
+  ui_data.setAxisCorrectionValue(new_params.getAxisCorrectoinValue());
 
   m_settings->setPageParams(m_pageId, new_params);
 

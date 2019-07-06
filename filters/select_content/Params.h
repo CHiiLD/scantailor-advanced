@@ -83,7 +83,7 @@ class Params {
 
   bool isEnableAxisCorrection();
 
-  QPointF getAxisCorrectoinValue();
+  QPointF& getAxisCorrectoinValue();
 
  private:
   QRectF m_contentRect;

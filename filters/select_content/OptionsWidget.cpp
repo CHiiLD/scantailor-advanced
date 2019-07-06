@@ -49,6 +49,9 @@ void OptionsWidget::preUpdateUI(const PageInfo& page_info) {
   fineTuneBtn->setVisible(false);
   dimensionsWidget->setVisible(false);
 
+  correctAxisBtn->setVisible(false);
+  updateAxisCorrectionValue(m_uiData.axisCorrectionValue());
+
   updateUnits(UnitsProvider::getInstance()->getUnits());
 
   setupUiConnections();
@@ -68,6 +71,7 @@ void OptionsWidget::postUpdateUI(const UiData& ui_data) {
   updatePageDetectOptionsDisplay();
   updateContentDetectOptionDisplay();
   updatePageRectSize(m_uiData.pageRect().size());
+  updateAxisCorrectionValue(m_uiData.axisCorrectionValue());
 
   setupUiConnections();
 }
@@ -354,15 +358,15 @@ void OptionsWidget::removeUiConnections() {
     commitCurrentParams();
 
     if (m_uiData.contentDetectionMode() == MODE_MANUAL) {
-      emit reloadRequested();
+//      emit reloadRequested();
     }
   }
 
   void OptionsWidget::onChangeAxisCorrectionValue(double) {
     double xAxis = xAxisCorrectionValue->value();
     double yAxis = yAxisCorrectionValue->value();
-    QPointF axis = QPointF(xAxis, yAxis);
-    m_uiData.setAxisCorrectionValue(axis);
+    QPointF value = QPointF(xAxis, yAxis);
+    m_uiData.setAxisCorrectionValue(value);
     commitCurrentParams();
   }
 
@@ -372,11 +376,17 @@ void OptionsWidget::removeUiConnections() {
     contentBoxOptionGroup->setVisible(m_uiData.contentDetectionMode() == MODE_MANUAL);
   }
 
+  void OptionsWidget::updateAxisCorrectionValue(QPointF &value) {
+    xAxisCorrectionValue->setValue(value.x());
+    yAxisCorrectionValue->setValue(value.y());
+  }
+
 
 /*========================= OptionsWidget::UiData ======================*/
 
 OptionsWidget::UiData::UiData()
-    : m_contentDetectionMode(MODE_AUTO), m_pageDetectionMode(MODE_DISABLED), m_fineTuneCornersEnabled(false) {}
+    : m_contentDetectionMode(MODE_AUTO), m_pageDetectionMode(MODE_DISABLED), m_fineTuneCornersEnabled(false),
+    m_enableAxisCorrection(false) {}
 
 OptionsWidget::UiData::~UiData() = default;
 

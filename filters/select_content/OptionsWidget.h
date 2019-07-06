@@ -163,6 +163,8 @@ class OptionsWidget : public FilterOptionsWidget, public UnitsObserver, private 
   int m_ignorePageSizeChanges;
 
   std::list<QMetaObject::Connection> m_connectionList;
+
+    void updateAxisCorrectionValue(QPointF &value);
 };
 }  // namespace select_content
 #endif  // ifndef SELECT_CONTENT_OPTIONSWIDGET_H_

@@ -130,7 +130,7 @@ void Params::setFineTuneCornersEnabled(bool fine_tune_corners) {
   m_fineTuneCorners = fine_tune_corners;
 }
 
-  QPointF Params::getAxisCorrectoinValue() {
+  QPointF& Params::getAxisCorrectoinValue() {
     return m_axisCorrectionValue;
   }
 
