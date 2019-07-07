@@ -37,7 +37,8 @@ class Thumbnail : public ThumbnailBase {
             const QRectF& content_rect,
             const QRectF& page_rect,
             bool page_rect_enabled,
-            bool deviant);
+            bool deviant,
+            bool warning);
 
   void paintOverImage(QPainter& painter,
                       const QTransform& image_to_display,
@@ -48,6 +49,7 @@ class Thumbnail : public ThumbnailBase {
   QRectF m_pageRect;
   bool m_pageRectEnabled;
   bool m_deviant;
+  bool m_warning;
 };
 }  // namespace select_content
 #endif

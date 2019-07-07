@@ -68,12 +68,14 @@ void CacheDrivenTask::process(const PageInfo& page_info,
   QSettings settings;
   const double deviationCoef = settings.value("settings/selectContentDeviationCoef", 0.35).toDouble();
   const double deviationThreshold = settings.value("settings/selectContentDeviationThreshold", 1.0).toDouble();
+  const bool notifyWarning = m_settings->isWarning(page_info.id());
 
   if (auto* thumb_col = dynamic_cast<ThumbnailCollector*>(collector)) {
     thumb_col->processThumbnail(std::unique_ptr<QGraphicsItem>(
         new Thumbnail(thumb_col->thumbnailCache(), thumb_col->maxLogicalThumbSize(), page_info.imageId(), xform,
                       params->contentRect(), params->pageRect(), params->pageDetectionMode() != MODE_DISABLED,
-                      m_settings->deviationProvider().isDeviant(page_info.id(), deviationCoef, deviationThreshold))));
+                      m_settings->deviationProvider().isDeviant(page_info.id(), deviationCoef, deviationThreshold),
+                      notifyWarning)));
   }
 }  // CacheDrivenTask::process
 }  // namespace select_content

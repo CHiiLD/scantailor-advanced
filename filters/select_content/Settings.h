@@ -61,6 +61,9 @@ class Settings : public ref_countable {
 
   const DeviationProvider<PageId>& deviationProvider() const;
 
+  void setWarning(const PageId &page_id, bool isWarn);
+
+  bool isWarning(const PageId &page_id);
  private:
   typedef std::unordered_map<PageId, Params> PageParams;
 
@@ -69,6 +72,7 @@ class Settings : public ref_countable {
   QSizeF m_pageDetectionBox;
   double m_pageDetectionTolerance;
   DeviationProvider<PageId> m_deviationProvider;
+  std::unordered_map<PageId, bool> m_warnings;
 };
 }  // namespace select_content
 #endif  // ifndef SELECT_CONTENT_SETTINGS_H_

@@ -28,12 +28,14 @@ Thumbnail::Thumbnail(intrusive_ptr<ThumbnailPixmapCache> thumbnail_cache,
                      const QRectF& content_rect,
                      const QRectF& page_rect,
                      bool page_rect_enabled,
-                     bool deviant)
+                     bool deviant,
+                     bool warning)
     : ThumbnailBase(std::move(thumbnail_cache), max_size, image_id, xform),
       m_contentRect(content_rect),
       m_pageRect(page_rect),
       m_pageRectEnabled(page_rect_enabled),
-      m_deviant(deviant) {}
+      m_deviant(deviant),
+      m_warning(warning) {}
 
 void Thumbnail::paintOverImage(QPainter& painter,
                                const QTransform& image_to_display,
@@ -60,6 +62,9 @@ void Thumbnail::paintOverImage(QPainter& painter,
     painter.setPen(pen);
 
     painter.setBrush(QColor(0x00, 0x00, 0xff, 50));
+    if (m_warning) {
+      painter.setBrush(QColor(0xff, 0x66, 0xa3, 50));
+    }
 
     QRectF content_rect(virtToThumb().mapRect(m_contentRect));
 

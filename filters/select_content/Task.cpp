@@ -101,6 +101,7 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
 
   bool need_update_content_box = false;
   bool need_update_page_box = false;
+  bool thumbnail_display_warning = false;
 
   if (!params || !deps.compatibleWith(params->dependencies(), &need_update_content_box, &need_update_page_box)) {
     QRectF page_rect(new_params.pageRect());
@@ -140,13 +141,28 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
           QPointF diffCenter = auto_rect_center - content_rect_center;
           QPointF value = new_params.getAxisCorrectoinValue();
 
-          if (0 < value.x() && fabs(diffCenter.x()) <= value.x())
+          if (0 < value.x())
           {
-            content_rect.moveCenter(QPointF(auto_rect_center.x(), content_rect_center.y()));
+            if (fabs(diffCenter.x()) <= value.x())
+            {
+              content_rect.moveCenter(QPointF(auto_rect_center.x(), content_rect_center.y()));
+            }
+            else
+            {
+              thumbnail_display_warning = true;
+            }
           }
-          if (0 < value.y() && fabs(diffCenter.y()) <= value.y())
+
+          if (0 < value.y())
           {
-            content_rect.moveCenter(QPointF(content_rect_center.x(), auto_rect_center.y()));
+            if (fabs(diffCenter.y()) <= value.y())
+            {
+              content_rect.moveCenter(QPointF(content_rect_center.x(), auto_rect_center.y()));
+            }
+            else
+            {
+              thumbnail_display_warning = true;
+            }
           }
         }
       }
@@ -172,6 +188,7 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
   ui_data.setAxisCorrectionValue(new_params.getAxisCorrectoinValue());
 
   m_settings->setPageParams(m_pageId, new_params);
+  m_settings->setWarning(m_pageId, thumbnail_display_warning);
 
   status.throwIfCancelled();
 

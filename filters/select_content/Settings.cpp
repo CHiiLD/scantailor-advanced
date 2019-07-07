@@ -113,4 +113,23 @@ const DeviationProvider<PageId>& Settings::deviationProvider() const {
   return m_deviationProvider;
 }
 
+  void Settings::setWarning(const PageId &page_id, bool isWarn) {
+    auto iter_find = m_warnings.find(page_id);
+    if (iter_find == m_warnings.end())
+    {
+      m_warnings.insert(std::pair<PageId, bool>(page_id, isWarn));
+    } else{
+      m_warnings[page_id] = isWarn;
+    }
+  }
+
+  bool Settings::isWarning(const PageId &page_id) {
+    auto iter_find = m_warnings.find(page_id);
+    if (iter_find == m_warnings.end())
+    {
+      return false;
+    } else {
+      return m_warnings[page_id];
+    }
+  }
 }  // namespace select_content
