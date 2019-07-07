@@ -146,6 +146,7 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
             if (fabs(diffCenter.x()) <= value.x())
             {
               content_rect.moveCenter(QPointF(auto_rect_center.x(), content_rect_center.y()));
+              content_rect_center = content_rect.center();
             }
             else
             {
