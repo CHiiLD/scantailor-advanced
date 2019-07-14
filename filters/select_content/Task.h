@@ -65,6 +65,9 @@ class Task : public ref_countable {
   std::unique_ptr<DebugImages> m_dbg;
   PageId m_pageId;
   bool m_batchProcessing;
+
+  bool correctAxisX(QRectF &content_rect, const QRectF &auto_rect, const float correct_value);
+  bool correctAxisY(QRectF &content_rect, const QRectF &auto_rect, const float correct_value);
 };
 }  // namespace select_content
 #endif  // ifndef SELECT_CONTENT_TASK_H_

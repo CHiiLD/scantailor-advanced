@@ -23,6 +23,7 @@
 #include <QMutex>
 #include <memory>
 #include <unordered_map>
+#include <map>
 #include "NonCopyable.h"
 #include "PageId.h"
 #include "Params.h"
@@ -64,8 +65,11 @@ class Settings : public ref_countable {
   void setWarning(const PageId &page_id, bool isWarn);
 
   bool isWarning(const PageId &page_id);
+
+  std::unique_ptr<Params> getPPrevParams(const PageId &page_id) const;
+
  private:
-  typedef std::unordered_map<PageId, Params> PageParams;
+  typedef std::map<PageId, Params> PageParams;
 
   mutable QMutex m_mutex;
   PageParams m_pageParams;

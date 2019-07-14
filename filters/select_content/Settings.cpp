@@ -132,4 +132,33 @@ const DeviationProvider<PageId>& Settings::deviationProvider() const {
       return m_warnings[page_id];
     }
   }
+
+  std::unique_ptr<Params> Settings::getPPrevParams(const PageId &page_id) const {
+    if (isParamsNull(page_id))
+    {
+      return nullptr;
+    }
+
+    QMutexLocker locker(&m_mutex);
+    auto find_ret = m_pageParams.rend();
+    for (auto it = m_pageParams.rbegin(); it != m_pageParams.rend(); ++it) {
+      if (it->first == page_id)
+      {
+        find_ret = it;
+        break;
+      }
+    }
+
+    int i = 2;
+    for (auto it = find_ret; it != m_pageParams.rend(); ++it)
+    {
+      if (i == 0)
+      {
+        return std::make_unique<Params>(it->second);
+      }
+      --i;
+    }
+
+    return nullptr;
+  }
 }  // namespace select_content

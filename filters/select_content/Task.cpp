@@ -136,33 +136,32 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
       } else if (new_params.contentDetectionMode() == MODE_MANUAL) {
         if (new_params.isEnableAxisCorrection()) {
           QRectF auto_rect = ContentBoxFinder::findContentBox(status, data, page_rect, m_dbg.get());
-          QPointF auto_rect_center = auto_rect.center();
-          QPointF content_rect_center = content_rect.center();
-          QPointF diffCenter = auto_rect_center - content_rect_center;
           QPointF value = new_params.getAxisCorrectoinValue();
+          auto pprev_params = m_settings->getPPrevParams(m_pageId);
 
-          if (0 < value.x())
+          if (0 < value.x() && correctAxisX(content_rect, auto_rect, value.x()) == false)
           {
-            if (fabs(diffCenter.x()) <= value.x())
+            thumbnail_display_warning = true;
+            if (pprev_params != nullptr)
             {
-              content_rect.moveCenter(QPointF(auto_rect_center.x(), content_rect_center.y()));
-              content_rect_center = content_rect.center();
-            }
-            else
-            {
-              thumbnail_display_warning = true;
+              QRectF pprev_rect(pprev_params->contentRect());
+              if (correctAxisX(pprev_rect, auto_rect, value.x()))
+              {
+                content_rect.moveLeft(pprev_rect.x());
+              }
             }
           }
 
-          if (0 < value.y())
+          if (0 < value.y() && correctAxisY(content_rect, auto_rect, value.y()) == false)
           {
-            if (fabs(diffCenter.y()) <= value.y())
+            thumbnail_display_warning = true;
+            if (pprev_params != nullptr)
             {
-              content_rect.moveCenter(QPointF(content_rect_center.x(), auto_rect_center.y()));
-            }
-            else
-            {
-              thumbnail_display_warning = true;
+              QRectF pprev_rect(pprev_params->contentRect());
+              if (correctAxisY(pprev_rect, auto_rect, value.y()))
+              {
+                content_rect.moveTop(pprev_rect.y());
+              }
             }
           }
         }
@@ -200,7 +199,30 @@ FilterResultPtr Task::process(const TaskStatus& status, const FilterData& data) 
                                      data.isBlackOnWhite() ? data.grayImage() : data.grayImage().inverted(), ui_data,
                                      m_batchProcessing);
   }
-}  // Task::process
+}
+
+  bool Task::correctAxisX(QRectF &content_rect, const QRectF &auto_rect, const float correct_value) {
+    QPointF diff = auto_rect.center() - content_rect.center();
+    if (fabs(diff.x()) < correct_value)
+    {
+      content_rect.translate(diff.x(), 0);
+      return true;
+    }
+
+    return false;
+  }
+
+  bool Task::correctAxisY(QRectF &content_rect, const QRectF &auto_rect, const float correct_value) {
+    QPointF diff = auto_rect.center() - content_rect.center();
+    if (fabs(diff.y()) < correct_value)
+    {
+      content_rect.translate(0, diff.y());
+      return true;
+    }
+
+    return false;
+  }
+  // Task::process
 
 /*============================ Task::UiUpdater ==========================*/
 
